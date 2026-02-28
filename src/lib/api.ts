@@ -1,4 +1,5 @@
-import { api } from "./axios";
+// import lib
+import { api } from "@/lib/axios";
 import type { AxiosRequestConfig } from "axios";
 
 /** GET request. Usage: const posts = await apiGet<Post[]>('/posts', { params: { _limit: 5 } }); */

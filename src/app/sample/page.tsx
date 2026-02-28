@@ -1,6 +1,9 @@
 "use client";
 
+// import react
 import { useState, useEffect } from "react";
+
+// import component
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
@@ -8,6 +11,8 @@ import CardContent from "@mui/material/CardContent";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
+
+// import lib
 import { apiGet } from "@/lib/api";
 
 interface Post {
