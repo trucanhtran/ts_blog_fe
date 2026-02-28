@@ -1,4 +1,18 @@
 services:
+  # Default: dev with hot reload (no rebuild when adding pages)
+  dev:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    command: sh -c "npm install && npm run dev:no-turbopack"
+    environment:
+      - WATCHPACK_POLLING=true
+
+  # Production: build image, run standalone (use: docker compose --profile prod up app)
   app:
     build:
       context: .
@@ -8,16 +22,5 @@ services:
     environment:
       - NODE_ENV=production
     restart: unless-stopped
-
-  # Optional: dev with hot reload (uncomment to use)
-  # dev:
-  #   image: node:20-alpine
-  #   working_dir: /app
-  #   volumes:
-  #     - .:/app
-  #     - /app/node_modules
-  #   ports:
-  #     - "3000:3000"
-  #   command: sh -c "npm ci && npm run dev"
-  #   environment:
-  #     - WATCHPACK_POLLING=true
+    profiles:
+      - prod

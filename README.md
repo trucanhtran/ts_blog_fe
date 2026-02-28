@@ -6,20 +6,20 @@ A Next.js front-end application with TypeScript, React, Tailwind CSS, and full t
 
 ## Tech Stack & Versions
 
-| Category | Technology | Version | Description |
-|----------|-------------|---------|-------------|
-| **Runtime** | Node.js | ≥ 22 | Required for local dev; Docker uses Node 22 Alpine |
-| **Framework** | Next.js | 15.x | App Router, Turbopack for dev |
-| **UI** | React | 19.x | React DOM 19 |
-| **Language** | TypeScript | 5.x | Strict mode, path alias `@/*` |
-| **Styling** | Tailwind CSS | 3.x | PostCSS + Autoprefixer |
-| **Linting** | ESLint | 9.x | Flat config; Next.js + TypeScript + Prettier |
-| **Formatting** | Prettier | 3.x | Integrated with ESLint |
-| **Testing** | Vitest | 2.x | Unit tests; jsdom, React Testing Library |
-| **Git hooks** | Husky | 9.x | Pre-commit: lint + test |
-| **Container** | Docker | - | Multi-stage Dockerfile; Node 22 Alpine |
-| **UI library** | Material UI (MUI) | 6.x | Theme, App Router cache provider |
-| **HTTP client** | Axios | 1.x | Configured in `src/lib/axios.ts`; base URL via `NEXT_PUBLIC_API_URL` |
+| Category        | Technology        | Version | Description                                                          |
+| --------------- | ----------------- | ------- | -------------------------------------------------------------------- |
+| **Runtime**     | Node.js           | ≥ 22    | Required for local dev; Docker uses Node 22 Alpine                   |
+| **Framework**   | Next.js           | 15.x    | App Router, Turbopack for dev                                        |
+| **UI**          | React             | 19.x    | React DOM 19                                                         |
+| **Language**    | TypeScript        | 5.x     | Strict mode, path alias `@/*`                                        |
+| **Styling**     | Tailwind CSS      | 3.x     | PostCSS + Autoprefixer                                               |
+| **Linting**     | ESLint            | 9.x     | Flat config; Next.js + TypeScript + Prettier                         |
+| **Formatting**  | Prettier          | 3.x     | Integrated with ESLint                                               |
+| **Testing**     | Vitest            | 2.x     | Unit tests; jsdom, React Testing Library                             |
+| **Git hooks**   | Husky             | 9.x     | Pre-commit: lint + test                                              |
+| **Container**   | Docker            | -       | Multi-stage Dockerfile; Node 22 Alpine                               |
+| **UI library**  | Material UI (MUI) | 6.x     | Theme, App Router cache provider                                     |
+| **HTTP client** | Axios             | 1.x     | Configured in `src/lib/axios.ts`; base URL via `NEXT_PUBLIC_API_URL` |
 
 ---
 
@@ -51,6 +51,19 @@ npm run dev
 - Starts the Next.js dev server with **Turbopack**.
 - App: **http://localhost:3000**
 - Hot reload on file changes.
+- Sample page (API + MUI): **http://localhost:3000/sample**
+
+**If `/sample` returns 404:**
+
+1. Stop the dev server (Ctrl+C), then clear cache and restart:
+   ```bash
+   rm -rf .next && npm run dev
+   ```
+2. Try without Turbopack (sometimes Turbopack misses new routes):
+   ```bash
+   npm run dev:no-turbopack
+   ```
+3. If you use `npm run start` (production), run `npm run build` first so `/sample` is included in the build.
 
 ---
 
@@ -126,32 +139,51 @@ npm run test:watch
 
 ---
 
-### Docker (production)
+### Docker
 
-**Build and run:**
-
-```bash
-docker compose up --build
-```
-
-- Builds the image (multi-stage: deps → builder → runner).
-- Runs the app in the foreground. Access at **http://localhost:3000**.
-
-**Run in background:**
+**Start (dev, default — hot reload):**
 
 ```bash
-docker compose up -d --build
+docker compose up
 ```
 
-- Same as above but detached. Use `docker compose down` to stop.
+- Starts the `dev` service: source mounted, `npm run dev`. No rebuild when you add pages. App: **http://localhost:3000**
+- Stop: `Ctrl+C` in the same terminal.
 
-**Rebuild after code changes:**
+**Start in background (detached):**
 
 ```bash
-docker compose up --build
+docker compose up -d
 ```
 
-- Rebuilds the image and starts the container.
+- Same as above but runs in the background. Use `docker compose down` to stop.
+
+**Stop and remove containers:**
+
+```bash
+docker compose down
+```
+
+- Stops and removes containers (and default network). Use after `docker compose up -d` or when you no longer need the dev server.
+
+**Production (build image, standalone):**
+
+```bash
+docker compose --profile prod up app --build
+```
+
+- Builds the image and runs the production server. Use when deploying or testing the built app.
+- Stop: `Ctrl+C`, or run in background with `-d` then `docker compose --profile prod down`.
+
+**Useful Docker commands:**
+
+| Command                      | Description                |
+| ---------------------------- | -------------------------- |
+| `docker compose up`          | Start dev (foreground)     |
+| `docker compose up -d`       | Start dev in background    |
+| `docker compose down`        | Stop and remove containers |
+| `docker compose ps`          | List running containers    |
+| `docker compose logs -f dev` | Follow dev service logs    |
 
 ---
 
@@ -170,21 +202,23 @@ Hooks are installed when you run `npm install` (via the `prepare` script).
 
 ## Project structure (overview)
 
-| Path | Purpose |
-|------|--------|
-| `src/app/` | Next.js App Router (layout, pages, globals.css) |
-| `src/app/api-sample/` | Sample page: MUI + Axios API call (JSONPlaceholder) |
-| `src/components/` | Shared components (e.g. `MuiProvider`) |
-| `src/lib/axios.ts` | Axios instance: baseURL, request/response interceptors |
-| `src/theme/` | MUI theme (typography, palette) |
-| `src/test/` | Test setup (e.g. Vitest + Testing Library) |
-| `public/` | Static assets |
-| `Dockerfile` | Multi-stage build; Node 22 Alpine; standalone output |
-| `docker-compose.yml` | Defines `app` service on port 3000 |
-| `eslint.config.mjs` | ESLint flat config |
-| `.prettierrc`, `.prettierignore` | Prettier config and ignore list |
-| `.husky/pre-commit` | Pre-commit hook: lint + test |
-| `.vscode/` | Suggested editor settings (format on save, ESLint) |
+| Path                             | Purpose                                                |
+| -------------------------------- | ------------------------------------------------------ |
+| `src/app/`                       | Next.js App Router (layout, pages, globals.css)        |
+| `src/app/sample/`                | Sample page: MUI + API (JSONPlaceholder) — **/sample** |
+| `src/app/api-sample/`            | Same sample at **/api-sample**                         |
+| `src/components/`                | Shared components (e.g. `MuiProvider`)                 |
+| `src/lib/axios.ts`               | Axios instance: baseURL, request/response interceptors |
+| `src/lib/api.ts`                 | Common API: `apiGet`, `apiPost`, `apiPut`, `apiDelete` |
+| `src/theme/`                     | MUI theme (typography, palette)                        |
+| `src/test/`                      | Test setup (e.g. Vitest + Testing Library)             |
+| `public/`                        | Static assets                                          |
+| `Dockerfile`                     | Multi-stage build; Node 22 Alpine; standalone output   |
+| `docker-compose.yml`             | Defines `app` service on port 3000                     |
+| `eslint.config.mjs`              | ESLint flat config                                     |
+| `.prettierrc`, `.prettierignore` | Prettier config and ignore list                        |
+| `.husky/pre-commit`              | Pre-commit hook: lint + test                           |
+| `.vscode/`                       | Suggested editor settings (format on save, ESLint)     |
 
 ---
 
@@ -198,15 +232,15 @@ Hooks are installed when you run `npm install` (via the `prepare` script).
 
 ## Quick reference: all npm scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start dev server (Turbopack) |
-| `npm run build` | Production build |
-| `npm run start` | Serve production build |
-| `npm run lint` | Run ESLint |
-| `npm run lint:fix` | Run ESLint with auto-fix |
-| `npm run format` | Prettier: format files in `src` |
-| `npm run format:check` | Prettier: check only (CI) |
-| `npm run test` | Run tests once (used in pre-commit) |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run prepare` | Install Husky hooks (runs after `npm install`) |
+| Script                 | Description                                    |
+| ---------------------- | ---------------------------------------------- |
+| `npm run dev`          | Start dev server (Turbopack)                   |
+| `npm run build`        | Production build                               |
+| `npm run start`        | Serve production build                         |
+| `npm run lint`         | Run ESLint                                     |
+| `npm run lint:fix`     | Run ESLint with auto-fix                       |
+| `npm run format`       | Prettier: format files in `src`                |
+| `npm run format:check` | Prettier: check only (CI)                      |
+| `npm run test`         | Run tests once (used in pre-commit)            |
+| `npm run test:watch`   | Run tests in watch mode                        |
+| `npm run prepare`      | Install Husky hooks (runs after `npm install`) |
