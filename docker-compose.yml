@@ -1,10 +1,9 @@
-# Dev: build from Dockerfile (target dev), mount source for hot reload
+# Local dev: mount source for hot reload
 services:
   dev:
     build:
       context: .
       dockerfile: Dockerfile
-      target: dev
     volumes:
       - .:/app
       - node_modules_dev:/app/node_modules
