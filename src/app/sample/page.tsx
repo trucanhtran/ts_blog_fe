@@ -17,7 +17,7 @@ interface Post {
   body: string;
 }
 
-export default function SamplePage() {
+const SamplePage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -87,4 +87,6 @@ export default function SamplePage() {
       )}
     </Box>
   );
-}
+};
+
+export default SamplePage;

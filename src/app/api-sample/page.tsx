@@ -17,7 +17,7 @@ interface Post {
   body: string;
 }
 
-export default function ApiSamplePage() {
+const ApiSamplePage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -87,4 +87,6 @@ export default function ApiSamplePage() {
       )}
     </Box>
   );
-}
+};
+
+export default ApiSamplePage;

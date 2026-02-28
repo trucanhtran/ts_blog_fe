@@ -15,16 +15,16 @@ export const metadata: Metadata = {
   description: "Next.js + TypeScript + React",
 };
 
-export default function RootLayout({
+const RootLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
-  return (
-    <html lang="vi" className={roboto.variable}>
-      <body className="antialiased min-h-screen">
-        <MuiProvider>{children}</MuiProvider>
-      </body>
-    </html>
-  );
-}
+}>) => (
+  <html lang="vi" className={roboto.variable}>
+    <body className="antialiased min-h-screen">
+      <MuiProvider>{children}</MuiProvider>
+    </body>
+  </html>
+);
+
+export default RootLayout;
