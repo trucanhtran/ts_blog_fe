@@ -1,6 +1,8 @@
 // import next
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 
 // import styles
 import "@/app/globals.css";
@@ -20,16 +22,22 @@ export const metadata: Metadata = {
   description: "Next.js + TypeScript + React",
 };
 
-const RootLayout = ({
+const RootLayout = async ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) => (
-  <html lang="vi" className={roboto.variable}>
-    <body className="antialiased min-h-screen">
-      <MuiProvider>{children}</MuiProvider>
-    </body>
-  </html>
-);
+}>) => {
+  const messages = await getMessages();
+
+  return (
+    <html lang="vi" className={roboto.variable}>
+      <body className="antialiased min-h-screen">
+        <NextIntlClientProvider messages={messages}>
+          <MuiProvider>{children}</MuiProvider>
+        </NextIntlClientProvider>
+      </body>
+    </html>
+  );
+};
 
 export default RootLayout;

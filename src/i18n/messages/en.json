@@ -1,0 +1,17 @@
+{
+  "common": {
+    "appName": "TS Blog",
+    "loading": "Loading…",
+    "refresh": "Refresh",
+    "error": "Something went wrong."
+  },
+  "home": {
+    "title": "TS Blog",
+    "subtitle": "Next.js + TypeScript + React — run with Docker Compose",
+    "linkSample": "→ Sample page (API + MUI)"
+  },
+  "sample": {
+    "title": "API Sample (Axios + MUI)",
+    "description": "Fetches posts from JSONPlaceholder via configured axios client."
+  }
+}

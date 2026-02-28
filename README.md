@@ -20,6 +20,7 @@ A Next.js front-end application with TypeScript, React, Tailwind CSS, and full t
 | **Container**   | Docker            | -       | Multi-stage Dockerfile; Node 22 Alpine                               |
 | **UI library**  | Material UI (MUI) | 6.x     | Theme, App Router cache provider                                     |
 | **HTTP client** | Axios             | 1.x     | Configured in `src/lib/axios.ts`; base URL via `NEXT_PUBLIC_API_URL` |
+| **i18n**        | next-intl         | 3.x     | Messages in `src/i18n/messages/`; `useTranslations` / `getTranslations` |
 
 ---
 
@@ -211,6 +212,7 @@ Hooks are installed when you run `npm install` (via the `prepare` script).
 | `src/lib/axios.ts`               | Axios instance: baseURL, request/response interceptors |
 | `src/lib/api.ts`                 | Common API: `apiGet`, `apiPost`, `apiPut`, `apiDelete` |
 | `src/theme/`                     | MUI theme (typography, palette)                        |
+| `src/i18n/`                      | i18n config, request, messages (en, vi)                |
 | `src/test/`                      | Test setup (e.g. Vitest + Testing Library)             |
 | `public/`                        | Static assets                                          |
 | `Dockerfile`                     | Multi-stage build; Node 22 Alpine; standalone output   |
@@ -219,6 +221,16 @@ Hooks are installed when you run `npm install` (via the `prepare` script).
 | `.prettierrc`, `.prettierignore` | Prettier config and ignore list                        |
 | `.husky/pre-commit`              | Pre-commit hook: lint + test                           |
 | `.vscode/`                       | Suggested editor settings (format on save, ESLint)     |
+
+---
+
+## i18n (next-intl)
+
+- **Config:** `src/i18n/config.ts` — `locales`, `defaultLocale` (vi).
+- **Request:** `src/i18n/request.ts` — `getRequestConfig` loads messages for the active locale.
+- **Messages:** `src/i18n/messages/en.json`, `vi.json` — namespaced keys (e.g. `home.title`, `common.loading`).
+- **Usage:** Server: `getTranslations('home')` from `next-intl/server`. Client: `useTranslations('home')` from `next-intl`. Root layout wraps with `NextIntlClientProvider` and `getMessages()`.
+- **Import:** `import { defaultLocale, type Locale } from '@/i18n';`
 
 ---
 

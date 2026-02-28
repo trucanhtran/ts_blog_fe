@@ -2,6 +2,7 @@
 
 // import react
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 // import component
 import Box from "@mui/material/Box";
@@ -23,6 +24,8 @@ interface Post {
 }
 
 const ApiSamplePage = () => {
+  const t = useTranslations("sample");
+  const tCommon = useTranslations("common");
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +37,7 @@ const ApiSamplePage = () => {
       const data = await apiGet<Post[]>("/posts", { params: { _limit: 5 } });
       setPosts(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Request failed");
+      setError(err instanceof Error ? err.message : tCommon("error"));
     } finally {
       setLoading(false);
     }
@@ -47,10 +50,10 @@ const ApiSamplePage = () => {
   return (
     <Box sx={{ p: 3, maxWidth: 720, mx: "auto" }}>
       <Typography variant="h4" component="h1" gutterBottom>
-        API Sample (Axios + MUI)
+        {t("title")}
       </Typography>
       <Typography color="text.secondary" sx={{ mb: 2 }}>
-        Fetches posts from JSONPlaceholder via configured axios client.
+        {t("description")}
       </Typography>
 
       {error && (
@@ -60,7 +63,7 @@ const ApiSamplePage = () => {
       )}
 
       <Button variant="contained" onClick={fetchPosts} disabled={loading} sx={{ mb: 2 }}>
-        {loading ? "Loading…" : "Refresh"}
+        {loading ? tCommon("loading") : tCommon("refresh")}
       </Button>
 
       {loading && !posts.length ? (
