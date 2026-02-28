@@ -2,13 +2,23 @@
 # Build stage - Node.js 22 LTS (latest)
 FROM node:22-alpine AS base
 
+# Dev stage: install deps only, source mounted at run time
+FROM base AS dev
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN --mount=type=cache,target=/root/.npm \
+    npm install
+EXPOSE 3000
+CMD ["npm", "run", "dev:no-turbopack"]
+
 # Dependencies stage
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json* ./
 # Use npm install so build works even when lockfile is out of sync; prefer `npm ci` when lockfile is committed and up to date
-RUN npm install
+RUN --mount=type=cache,target=/root/.npm \
+    npm install
 
 # Builder stage
 FROM base AS builder

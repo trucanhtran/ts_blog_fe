@@ -140,51 +140,38 @@ npm run test:watch
 
 ---
 
-### Docker
+### Docker (dev only)
 
-**Start (dev, default — hot reload):**
+Một service: build từ **Dockerfile** (target `dev`), mount source để hot reload.
+
+**Chạy:**
 
 ```bash
 docker compose up
 ```
 
-- Starts the `dev` service: source mounted, `npm run dev`. No rebuild when you add pages. App: **http://localhost:3000**
-- Stop: `Ctrl+C` in the same terminal.
+- Cài dependency + chạy dev server. Hot reload, thêm file không cần build. **http://localhost:3000** — Dừng: `Ctrl+C`.
 
-**Start in background (detached):**
+**Chạy nền:**
 
 ```bash
 docker compose up -d
 ```
 
-- Same as above but runs in the background. Use `docker compose down` to stop.
-
-**Stop and remove containers:**
+**Dừng:**
 
 ```bash
 docker compose down
 ```
 
-- Stops and removes containers (and default network). Use after `docker compose up -d` or when you no longer need the dev server.
+| Lệnh                       | Mô tả              |
+| -------------------------- | ------------------ |
+| `docker compose up`        | Chạy dev (foreground) |
+| `docker compose up -d`     | Chạy dev nền       |
+| `docker compose down`      | Dừng và xóa container |
+| `docker compose logs -f dev` | Xem log dev    |
 
-**Production (build image, standalone):**
-
-```bash
-docker compose --profile prod up app --build
-```
-
-- Builds the image and runs the production server. Use when deploying or testing the built app.
-- Stop: `Ctrl+C`, or run in background with `-d` then `docker compose --profile prod down`.
-
-**Useful Docker commands:**
-
-| Command                      | Description                |
-| ---------------------------- | -------------------------- |
-| `docker compose up`          | Start dev (foreground)     |
-| `docker compose up -d`       | Start dev in background    |
-| `docker compose down`        | Stop and remove containers |
-| `docker compose ps`          | List running containers    |
-| `docker compose logs -f dev` | Follow dev service logs    |
+**Production:** Khi cần build image để deploy thì dùng Dockerfile: `docker build -t ts-blog-fe . && docker run -p 3000:3000 ts-blog-fe`.
 
 ---
 
