@@ -1,13 +1,7 @@
 "use client";
 
 import type { FeedPost } from "@/app/home/types";
-import {
-  PlusIcon,
-  HeartOutlineIcon,
-  CommentIcon,
-  RepostIcon,
-  ShareIcon,
-} from "@/components/icons";
+import { PlusIcon, HeartOutlineIcon, CommentIcon, RepostIcon, ShareIcon } from "@/components/icons";
 
 interface PostItemProps {
   post: FeedPost;
