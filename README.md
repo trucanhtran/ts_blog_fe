@@ -18,6 +18,8 @@ A Next.js front-end application with TypeScript, React, Tailwind CSS, and full t
 | **Testing** | Vitest | 2.x | Unit tests; jsdom, React Testing Library |
 | **Git hooks** | Husky | 9.x | Pre-commit: lint + test |
 | **Container** | Docker | - | Multi-stage Dockerfile; Node 22 Alpine |
+| **UI library** | Material UI (MUI) | 6.x | Theme, App Router cache provider |
+| **HTTP client** | Axios | 1.x | Configured in `src/lib/axios.ts`; base URL via `NEXT_PUBLIC_API_URL` |
 
 ---
 
@@ -171,6 +173,10 @@ Hooks are installed when you run `npm install` (via the `prepare` script).
 | Path | Purpose |
 |------|--------|
 | `src/app/` | Next.js App Router (layout, pages, globals.css) |
+| `src/app/api-sample/` | Sample page: MUI + Axios API call (JSONPlaceholder) |
+| `src/components/` | Shared components (e.g. `MuiProvider`) |
+| `src/lib/axios.ts` | Axios instance: baseURL, request/response interceptors |
+| `src/theme/` | MUI theme (typography, palette) |
 | `src/test/` | Test setup (e.g. Vitest + Testing Library) |
 | `public/` | Static assets |
 | `Dockerfile` | Multi-stage build; Node 22 Alpine; standalone output |
