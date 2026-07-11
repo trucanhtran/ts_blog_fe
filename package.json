@@ -21,6 +21,7 @@
     "@emotion/styled": "^11",
     "@mui/material": "^6",
     "@mui/material-nextjs": "^6",
+    "@ts-blog/api-client": "file:vendor/ts-blog-api-client-1.0.0.tgz",
     "axios": "^1.7",
     "next": "^15.1.0",
     "next-intl": "^3",

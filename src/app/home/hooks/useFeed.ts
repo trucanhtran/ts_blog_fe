@@ -2,57 +2,49 @@
 
 import { useState, useCallback, useEffect } from "react";
 import type { FeedPost } from "@/app/home/types";
+import { createPostsApi, ensureApiSession } from "@/lib/api-client";
+import type { Post } from "@ts-blog/api-client";
 
-// Mock data for local dev; replace with API later
-const MOCK_POSTS: FeedPost[] = [
-  {
-    id: "1",
-    username: "t_nguyn_01",
-    content:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    timeAgo: "22h",
-    likeCount: 115,
-    replyCount: 1,
-  },
-  {
-    id: "2",
-    username: "ming_heng07",
-    content:
-      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    timeAgo: "1d",
-    likeCount: 2200,
-    replyCount: 12,
-  },
-  {
-    id: "3",
-    username: "choose4me.luv",
-    content:
-      "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-    timeAgo: "20h",
-    likeCount: 89,
-    replyCount: 5,
-  },
-  {
-    id: "4",
-    username: "xeonong",
-    content:
-      "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    timeAgo: "2d",
-    likeCount: 42,
-    replyCount: 0,
-  },
-];
+const formatTimeAgo = (value?: string) => {
+  if (!value) return "now";
+
+  const createdAt = new Date(value).getTime();
+  const diffMs = Date.now() - createdAt;
+  const diffMinutes = Math.max(0, Math.floor(diffMs / 60000));
+
+  if (diffMinutes < 1) return "now";
+  if (diffMinutes < 60) return `${diffMinutes}m`;
+
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `${diffHours}h`;
+
+  return `${Math.floor(diffHours / 24)}d`;
+};
+
+const toFeedPost = (post: Post): FeedPost => ({
+  id: String(post.id ?? crypto.randomUUID()),
+  username: "you",
+  content: post.content,
+  timeAgo: formatTimeAgo(post.created_at),
+  likeCount: 0,
+  replyCount: 0,
+});
 
 export function useFeed() {
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchFeed = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
-      // Simulate network
-      await new Promise((r) => setTimeout(r, 400));
-      setPosts(MOCK_POSTS);
+      const session = await ensureApiSession();
+      const postsApi = createPostsApi(session.token);
+      const response = await postsApi.apiV1PostsGet(1, 20);
+      setPosts((response.data.data ?? []).map(toFeedPost));
+    } catch {
+      setError("Cannot load posts right now.");
     } finally {
       setLoading(false);
     }
@@ -62,17 +54,26 @@ export function useFeed() {
     fetchFeed();
   }, [fetchFeed]);
 
-  const addPost = useCallback((content: string) => {
-    const newPost: FeedPost = {
-      id: String(Date.now()),
-      username: "you",
-      content,
-      timeAgo: "now",
-      likeCount: 0,
-      replyCount: 0,
-    };
-    setPosts((prev) => [newPost, ...prev]);
+  const addPost = useCallback(async (content: string) => {
+    const session = await ensureApiSession();
+    const authorId = session.user.id;
+
+    if (!authorId) {
+      throw new Error("Cannot create a post without a user id.");
+    }
+
+    const postsApi = createPostsApi(session.token);
+    const response = await postsApi.apiV1PostsPost({
+      post: {
+        title: content.slice(0, 80) || "Untitled",
+        content,
+        published: true,
+        author_id: authorId,
+      },
+    });
+
+    setPosts((prev) => [toFeedPost(response.data), ...prev]);
   }, []);
 
-  return { posts, loading, addPost, refetch: fetchFeed };
+  return { posts, loading, error, addPost, refetch: fetchFeed };
 }
