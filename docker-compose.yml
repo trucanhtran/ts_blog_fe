@@ -9,6 +9,7 @@ services:
       - node_modules_dev:/app/node_modules
     ports:
       - "3000:3000"
+    command: sh -lc "npm install && npm run dev:no-turbopack"
     environment:
       - WATCHPACK_POLLING=true
 

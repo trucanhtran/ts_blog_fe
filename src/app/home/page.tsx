@@ -10,14 +10,14 @@ import { useFeed } from "@/app/home/hooks/useFeed";
 import { useCreatePost } from "@/app/home/hooks/useCreatePost";
 
 const HomePage = () => {
-  const { posts, loading, addPost } = useFeed();
+  const { posts, loading, error: feedError, addPost } = useFeed();
   const handleSubmit = useCallback(
-    (content: string) => {
-      addPost(content);
+    async (content: string) => {
+      await addPost(content);
     },
     [addPost]
   );
-  const { content, setContent, submit, submitting } = useCreatePost(handleSubmit);
+  const { content, setContent, submit, submitting, error: postError } = useCreatePost(handleSubmit);
 
   return (
     <div className="flex min-h-screen bg-black text-white">
@@ -29,6 +29,11 @@ const HomePage = () => {
           onPostSubmit={submit}
           submitting={submitting}
         />
+        {(feedError || postError) && (
+          <div className="border-b border-red-900 bg-red-950/50 px-4 py-2 text-sm text-red-200">
+            {postError || feedError}
+          </div>
+        )}
         <div className="flex-1 overflow-y-auto">
           <PostList posts={posts} loading={loading} />
         </div>
